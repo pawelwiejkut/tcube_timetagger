@@ -1,10 +1,12 @@
 # TCube TimeTracker
 
-A native macOS application for tracking time using the Timeular cube device via Bluetooth Low Energy. The application automatically detects cube orientation changes and logs time tracking events to your Timeular account.
+A native macOS application that provides OS-level integration for the TimeCube device, allowing it to send time tracking entries to [Timetagger](https://timetagger.app) via Bluetooth Low Energy. This **unofficial** and **open source** application automatically detects cube orientation changes and logs time tracking events.
+
+This project is **free** and **open source** - not affiliated with TimeCube or Timetagger.
 
 ## Features
 
-- **Bluetooth Integration**: Seamless connection to Timeular cube via CoreBluetooth
+- **Bluetooth Integration**: Seamless connection to TimeCube device via CoreBluetooth
 - **Intelligent Reconnection**: Smart backoff strategy for stable long-term operation (24+ hours)
 - **Battery Optimization**: Energy-efficient scanning and connection management
 - **Menu Bar Integration**: Clean status bar interface with timer display
@@ -17,15 +19,15 @@ A native macOS application for tracking time using the Timeular cube device via 
 
 - macOS 10.15+ (Catalina or later)
 - Bluetooth LE support
-- Timeular cube device
-- Active Timeular account with API access
+- TimeCube device
+- Active Timetagger account
 
 ## Installation
 
 ### Prerequisites
 
 1. **Xcode**: Install Xcode from the Mac App Store
-2. **Timeular Account**: Ensure you have a Timeular account and API key
+2. **Timetagger Account**: Ensure you have a Timetagger account
 3. **Bluetooth Permissions**: The app will request Bluetooth access on first run
 
 ### Building from Source
@@ -84,7 +86,7 @@ touch ~/.tcube-timetagger/config.json
 ### Starting the Application
 
 1. Launch the app - it will appear in your menu bar
-2. The app automatically scans for your Timeular cube
+2. The app automatically scans for your TimeCube device
 3. When connected, the battery level appears in the menu
 4. Flip the cube to start tracking different activities
 
@@ -99,7 +101,7 @@ touch ~/.tcube-timetagger/config.json
 
 - **Cube Detection**: App automatically detects when cube is flipped
 - **Activity Mapping**: Each face corresponds to a configured activity
-- **Time Logging**: Events are sent to Timeular in real-time
+- **Time Logging**: Events are sent to Timetagger in real-time
 - **Offline Support**: Events are buffered when offline and synced when connection returns
 
 ## Architecture
@@ -115,11 +117,11 @@ touch ~/.tcube-timetagger/config.json
 #### AppLogic
 - Processes cube orientation changes
 - Manages time tracking sessions
-- Handles API communication with Timeular
+- Handles API communication with Timetagger
 - Implements offline event buffering
 
 #### TimetaggerHandler
-- HTTP API client for Timeular
+- HTTP API client for Timetagger
 - Network monitoring and resilience
 - JSON serialization and error handling
 
@@ -162,7 +164,7 @@ This reduces battery drain by 98% compared to aggressive reconnection while main
 
 ### Authentication
 
-All API requests include the `authtoken` header with your Timeular API key.
+All API requests include the `authtoken` header with your Timetagger API key.
 
 ## Troubleshooting
 
@@ -180,7 +182,7 @@ All API requests include the `authtoken` header with your Timeular API key.
 
 **API Authentication Errors**:
 - Verify your API key is correct
-- Check your Timeular account is active
+- Check your Timetagger account is active
 - Test API connectivity manually
 
 **Tracking Not Starting**:
@@ -264,7 +266,7 @@ The app includes comprehensive error handling and logging for debugging:
 
 - API keys are stored in user configuration files (not in code)
 - No sensitive data is logged
-- Secure HTTPS communication with Timeular API
+- Secure HTTPS communication with Timetagger API
 - Minimal app permissions (only Bluetooth and notifications)
 
 ## License
@@ -273,7 +275,8 @@ MIT License - see LICENSE file for details.
 
 ## Acknowledgments
 
-- Timeular for the cube hardware and API
+- TimeCube for the cube hardware
+- [Timetagger](https://timetagger.app) for the time tracking platform
 - Apple for CoreBluetooth framework
 - Swift community for excellent documentation
 
@@ -283,4 +286,4 @@ For issues and feature requests, please use the GitHub issue tracker.
 
 ---
 
-**Note**: This is an unofficial client for Timeular. For official support, contact Timeular directly.
+**Note**: This is an unofficial integration for TimeCube and Timetagger. For official support, contact the respective vendors directly.
