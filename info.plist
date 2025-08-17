@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>CFBundleName</key>
+    <string>tcube-timetagger</string>
+    <key>CFBundleIdentifier</key>
+    <string>dev.pawelwiejkut.tcube-timetagger</string>
+    <key>CFBundleVersion</key>
+    <string>1.0</string>
+    <key>CFBundleShortVersionString</key>
+    <string>1.0</string>
+    <key>LSBackgroundOnly</key>
+    <true/>
+    <key>NSPrincipalClass</key>
+    <string>NSApplication</string>
+    <key>NSBluetoothAlwaysUsageDescription</key>
+    <string>Ta aplikacja wymaga dostępu do Bluetooth, aby móc komunikować się z urządzeniami.</string>
+    <key>NSBluetoothPeripheralUsageDescription</key>
+    <string>Ta aplikacja wymaga dostępu do Bluetooth, aby móc komunikować się z urządzeniami.</string>
+    <key>NSDocumentsFolderUsageDescription</key>
+    <string>Ta aplikacja wymaga dostępu do folderu Dokumenty, aby przechowywać dane użytkownika.</string>
+    <key>NSAppTransportSecurity</key>
+    <dict>
+        <key>NSAllowsArbitraryLoads</key>
+        <true/>
+    </dict>
+    <key>CFBundleIconFile</key>
+    <string>AppIcon</string> <!-- Zmień 'AppIcon' na nazwę swojej ikony bez rozszerzenia -->
+</dict>
+</plist>

@@ -6,32 +6,32 @@
 	objectVersion = 77;
 	objects = {
 
-/* Begin PBXCopyFilesBuildPhase section */
-		7A72C3462CD1FD6F006E48F7 /* CopyFiles */ = {
-			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
-			dstPath = /usr/share/man/man1/;
-			dstSubfolderSpec = 0;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 1;
-		};
-/* End PBXCopyFilesBuildPhase section */
+/* Begin PBXBuildFile section */
+		7A72C4482CD550E2006E48F7 /* main.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A72C4422CD550E2006E48F7 /* main.swift */; };
+		7A72C44B2CD550E2006E48F7 /* AppLogic.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A72C4432CD550E2006E48F7 /* AppLogic.swift */; };
+		7A72C44D2CD550E2006E48F7 /* TimetaggerHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A72C4472CD550E2006E48F7 /* TimetaggerHandler.swift */; };
+		7A72C44F2CD55127006E48F7 /* Configuration.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A72C44E2CD55127006E48F7 /* Configuration.swift */; };
+		7A72C4512CD55158006E48F7 /* BluetoothDeviceManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7A72C4502CD55158006E48F7 /* BluetoothDeviceManager.swift */; };
+		7ABC2A2B2CD5632500A93DEE /* info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 7ABC2A2A2CD5632500A93DEE /* info.plist */; };
+		7ABC2A632CD6BD7200A93DEE /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 7ABC2A622CD6BD7200A93DEE /* Assets.xcassets */; };
+		7ABC2A672CD6C8F500A93DEE /* AppIcon.icns in Resources */ = {isa = PBXBuildFile; fileRef = 7ABC2A662CD6C8F500A93DEE /* AppIcon.icns */; };
+/* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		7A72C3482CD1FD6F006E48F7 /* tcube-timetagger */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = "tcube-timetagger"; sourceTree = BUILT_PRODUCTS_DIR; };
+		7A72C4152CD54EEF006E48F7 /* tcube-timetagger.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "tcube-timetagger.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		7A72C4422CD550E2006E48F7 /* main.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = main.swift; sourceTree = "<group>"; };
+		7A72C4432CD550E2006E48F7 /* AppLogic.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppLogic.swift; sourceTree = "<group>"; };
+		7A72C4472CD550E2006E48F7 /* TimetaggerHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimetaggerHandler.swift; sourceTree = "<group>"; };
+		7A72C44E2CD55127006E48F7 /* Configuration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Configuration.swift; sourceTree = "<group>"; };
+		7A72C4502CD55158006E48F7 /* BluetoothDeviceManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BluetoothDeviceManager.swift; sourceTree = "<group>"; };
+		7A72C4542CD552CB006E48F7 /* tcube_timetagger.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = tcube_timetagger.entitlements; sourceTree = "<group>"; };
+		7ABC2A2A2CD5632500A93DEE /* info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = info.plist; sourceTree = "<group>"; };
+		7ABC2A622CD6BD7200A93DEE /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		7ABC2A662CD6C8F500A93DEE /* AppIcon.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = AppIcon.icns; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
-/* Begin PBXFileSystemSynchronizedRootGroup section */
-		7A72C34A2CD1FD6F006E48F7 /* tcube-timetagger */ = {
-			isa = PBXFileSystemSynchronizedRootGroup;
-			path = "tcube-timetagger";
-			sourceTree = "<group>";
-		};
-/* End PBXFileSystemSynchronizedRootGroup section */
-
 /* Begin PBXFrameworksBuildPhase section */
-		7A72C3452CD1FD6F006E48F7 /* Frameworks */ = {
+		7A72C4122CD54EEF006E48F7 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -44,7 +44,13 @@
 		7A72C33F2CD1FD6F006E48F7 = {
 			isa = PBXGroup;
 			children = (
-				7A72C34A2CD1FD6F006E48F7 /* tcube-timetagger */,
+				7ABC2A2A2CD5632500A93DEE /* info.plist */,
+				7A72C4552CD552CB006E48F7 /* tcube-timetagger */,
+				7A72C4502CD55158006E48F7 /* BluetoothDeviceManager.swift */,
+				7A72C4422CD550E2006E48F7 /* main.swift */,
+				7A72C44E2CD55127006E48F7 /* Configuration.swift */,
+				7A72C4432CD550E2006E48F7 /* AppLogic.swift */,
+				7A72C4472CD550E2006E48F7 /* TimetaggerHandler.swift */,
 				7A72C3492CD1FD6F006E48F7 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -52,35 +58,50 @@
 		7A72C3492CD1FD6F006E48F7 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				7A72C3482CD1FD6F006E48F7 /* tcube-timetagger */,
+				7A72C4152CD54EEF006E48F7 /* tcube-timetagger.app */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		7A72C4532CD552CB006E48F7 /* Preview Content */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = "Preview Content";
+			sourceTree = "<group>";
+		};
+		7A72C4552CD552CB006E48F7 /* tcube-timetagger */ = {
+			isa = PBXGroup;
+			children = (
+				7ABC2A622CD6BD7200A93DEE /* Assets.xcassets */,
+				7ABC2A662CD6C8F500A93DEE /* AppIcon.icns */,
+				7A72C4532CD552CB006E48F7 /* Preview Content */,
+				7A72C4542CD552CB006E48F7 /* tcube_timetagger.entitlements */,
+			);
+			path = "tcube-timetagger";
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		7A72C3472CD1FD6F006E48F7 /* tcube-timetagger */ = {
+		7A72C4142CD54EEF006E48F7 /* tcube-timetagger */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 7A72C34F2CD1FD6F006E48F7 /* Build configuration list for PBXNativeTarget "tcube-timetagger" */;
+			buildConfigurationList = 7A72C4212CD54EF0006E48F7 /* Build configuration list for PBXNativeTarget "tcube-timetagger" */;
 			buildPhases = (
-				7A72C3442CD1FD6F006E48F7 /* Sources */,
-				7A72C3452CD1FD6F006E48F7 /* Frameworks */,
-				7A72C3462CD1FD6F006E48F7 /* CopyFiles */,
+				7A72C4112CD54EEF006E48F7 /* Sources */,
+				7A72C4122CD54EEF006E48F7 /* Frameworks */,
+				7A72C4132CD54EEF006E48F7 /* Resources */,
 			);
 			buildRules = (
 			);
 			dependencies = (
 			);
-			fileSystemSynchronizedGroups = (
-				7A72C34A2CD1FD6F006E48F7 /* tcube-timetagger */,
-			);
 			name = "tcube-timetagger";
 			packageProductDependencies = (
 			);
 			productName = "tcube-timetagger";
-			productReference = 7A72C3482CD1FD6F006E48F7 /* tcube-timetagger */;
-			productType = "com.apple.product-type.tool";
+			productReference = 7A72C4152CD54EEF006E48F7 /* tcube-timetagger.app */;
+			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
 
@@ -92,8 +113,9 @@
 				LastSwiftUpdateCheck = 1610;
 				LastUpgradeCheck = 1610;
 				TargetAttributes = {
-					7A72C3472CD1FD6F006E48F7 = {
+					7A72C4142CD54EEF006E48F7 = {
 						CreatedOnToolsVersion = 16.1;
+						LastSwiftMigration = 1610;
 					};
 				};
 			};
@@ -111,16 +133,34 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				7A72C3472CD1FD6F006E48F7 /* tcube-timetagger */,
+				7A72C4142CD54EEF006E48F7 /* tcube-timetagger */,
 			);
 		};
 /* End PBXProject section */
 
+/* Begin PBXResourcesBuildPhase section */
+		7A72C4132CD54EEF006E48F7 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				7ABC2A632CD6BD7200A93DEE /* Assets.xcassets in Resources */,
+				7ABC2A672CD6C8F500A93DEE /* AppIcon.icns in Resources */,
+				7ABC2A2B2CD5632500A93DEE /* info.plist in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
 /* Begin PBXSourcesBuildPhase section */
-		7A72C3442CD1FD6F006E48F7 /* Sources */ = {
+		7A72C4112CD54EEF006E48F7 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				7A72C4512CD55158006E48F7 /* BluetoothDeviceManager.swift in Sources */,
+				7A72C4482CD550E2006E48F7 /* main.swift in Sources */,
+				7A72C44F2CD55127006E48F7 /* Configuration.swift in Sources */,
+				7A72C44B2CD550E2006E48F7 /* AppLogic.swift in Sources */,
+				7A72C44D2CD550E2006E48F7 /* TimetaggerHandler.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -179,6 +219,12 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				INFOPLIST_KEY_LSSupportsOpeningDocumentsInPlace = YES;
+				INFOPLIST_KEY_NSBluetoothAlwaysUsageDescription = info.plist;
+				INFOPLIST_KEY_NSBluetoothPeripheralUsageDescription = info.plist;
+				INFOPLIST_KEY_NSBluetoothWhileInUseUsageDescription = info.plist;
+				INFOPLIST_KEY_NSDocumentsFolderUsageDescription = info.plist;
+				INFOPLIST_KEY_NSPrincipalClass = NSApplication;
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MACOSX_DEPLOYMENT_TARGET = 14.7;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
@@ -236,6 +282,12 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				INFOPLIST_KEY_LSSupportsOpeningDocumentsInPlace = YES;
+				INFOPLIST_KEY_NSBluetoothAlwaysUsageDescription = info.plist;
+				INFOPLIST_KEY_NSBluetoothPeripheralUsageDescription = info.plist;
+				INFOPLIST_KEY_NSBluetoothWhileInUseUsageDescription = info.plist;
+				INFOPLIST_KEY_NSDocumentsFolderUsageDescription = info.plist;
+				INFOPLIST_KEY_NSPrincipalClass = NSApplication;
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MACOSX_DEPLOYMENT_TARGET = 14.7;
 				MTL_ENABLE_DEBUG_INFO = NO;
@@ -245,21 +297,100 @@
 			};
 			name = Release;
 		};
-		7A72C3502CD1FD6F006E48F7 /* Debug */ = {
+		7A72C4222CD54EF0006E48F7 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
+				ASSETCATALOG_COMPILER_STANDALONE_ICON_BEHAVIOR = all;
+				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_ENTITLEMENTS = "tcube-timetagger/tcube_timetagger.entitlements";
 				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_ASSET_PATHS = "\"tcube-timetagger/Preview Content\"";
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				"INFOPLIST_FILE[sdk=*]" = info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = "tcube-timetagger";
+				INFOPLIST_KEY_LSSupportsOpeningDocumentsInPlace = YES;
+				INFOPLIST_KEY_NSBluetoothAlwaysUsageDescription = "";
+				INFOPLIST_KEY_NSBluetoothPeripheralUsageDescription = "";
+				INFOPLIST_KEY_NSBluetoothWhileInUseUsageDescription = "";
+				INFOPLIST_KEY_NSDocumentsFolderUsageDescription = "";
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = NO;
+				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = NO;
+				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = NO;
+				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphoneos*]" = YES;
+				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphonesimulator*]" = YES;
+				"INFOPLIST_KEY_UILaunchScreen_Generation[sdk=iphoneos*]" = YES;
+				"INFOPLIST_KEY_UILaunchScreen_Generation[sdk=iphonesimulator*]" = YES;
+				"INFOPLIST_KEY_UIStatusBarStyle[sdk=iphoneos*]" = UIStatusBarStyleDefault;
+				"INFOPLIST_KEY_UIStatusBarStyle[sdk=iphonesimulator*]" = UIStatusBarStyleDefault;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 18.1;
+				LD_RUNPATH_SEARCH_PATHS = "@executable_path/Frameworks";
+				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = "@executable_path/../Frameworks";
+				MACOSX_DEPLOYMENT_TARGET = 14.7;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "dev.pawelwiejkut.tcube-timetagger";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = auto;
+				SUPPORTED_PLATFORMS = macosx;
+				SUPPORTS_MACCATALYST = NO;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
+				XROS_DEPLOYMENT_TARGET = 2.1;
 			};
 			name = Debug;
 		};
-		7A72C3512CD1FD6F006E48F7 /* Release */ = {
+		7A72C4232CD54EF0006E48F7 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
+				ASSETCATALOG_COMPILER_STANDALONE_ICON_BEHAVIOR = all;
+				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_ENTITLEMENTS = "tcube-timetagger/tcube_timetagger.entitlements";
 				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_ASSET_PATHS = "\"tcube-timetagger/Preview Content\"";
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				"INFOPLIST_FILE[sdk=*]" = info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = "tcube-timetagger";
+				INFOPLIST_KEY_LSSupportsOpeningDocumentsInPlace = YES;
+				INFOPLIST_KEY_NSBluetoothAlwaysUsageDescription = "";
+				INFOPLIST_KEY_NSBluetoothPeripheralUsageDescription = "";
+				INFOPLIST_KEY_NSBluetoothWhileInUseUsageDescription = "";
+				INFOPLIST_KEY_NSDocumentsFolderUsageDescription = "";
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = NO;
+				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
+				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
+				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphoneos*]" = YES;
+				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphonesimulator*]" = YES;
+				"INFOPLIST_KEY_UILaunchScreen_Generation[sdk=iphoneos*]" = YES;
+				"INFOPLIST_KEY_UILaunchScreen_Generation[sdk=iphonesimulator*]" = YES;
+				"INFOPLIST_KEY_UIStatusBarStyle[sdk=iphoneos*]" = UIStatusBarStyleDefault;
+				"INFOPLIST_KEY_UIStatusBarStyle[sdk=iphonesimulator*]" = UIStatusBarStyleDefault;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 18.1;
+				LD_RUNPATH_SEARCH_PATHS = "@executable_path/Frameworks";
+				"LD_RUNPATH_SEARCH_PATHS[sdk=macosx*]" = "@executable_path/../Frameworks";
+				MACOSX_DEPLOYMENT_TARGET = 14.7;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "dev.pawelwiejkut.tcube-timetagger";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = auto;
+				SUPPORTED_PLATFORMS = macosx;
+				SUPPORTS_MACCATALYST = NO;
+				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
+				XROS_DEPLOYMENT_TARGET = 2.1;
 			};
 			name = Release;
 		};
@@ -275,11 +406,11 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		7A72C34F2CD1FD6F006E48F7 /* Build configuration list for PBXNativeTarget "tcube-timetagger" */ = {
+		7A72C4212CD54EF0006E48F7 /* Build configuration list for PBXNativeTarget "tcube-timetagger" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				7A72C3502CD1FD6F006E48F7 /* Debug */,
-				7A72C3512CD1FD6F006E48F7 /* Release */,
+				7A72C4222CD54EF0006E48F7 /* Debug */,
+				7A72C4232CD54EF0006E48F7 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
