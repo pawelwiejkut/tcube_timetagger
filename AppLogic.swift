@@ -26,6 +26,7 @@ final class AppLogic {
     private var configuration: Configuration
     private var lastEvent: Data
     private var bufferedEvents: [(appKey: String, t1: Int64, t2: Int64, label: String, mt: Int, hidden: Bool)] = []
+    private let bufferedEventsKey = "BufferedEvents"
     
     // MARK: - Properties
     private var notificationQueue: [UNNotificationRequest] = []
@@ -44,9 +45,11 @@ final class AppLogic {
         self.lastEvent = Data()
         
         setupNetworkNotifications()
+        loadBufferedEvents()
     }
     
     deinit {
+        saveBufferedEvents()
         // Cleanup is handled by TimetaggerHandler
     }
 
@@ -253,6 +256,8 @@ final class AppLogic {
     private func bufferEvent(appKey: String, t1: Int64, t2: Int64, label: String, hidden: Bool) {
         let bufferedEvent = (appKey: appKey, t1: t1, t2: t2, label: label, mt: Int(Date().timeIntervalSince1970), hidden: hidden)
         bufferedEvents.append(bufferedEvent)
+        saveBufferedEvents()
+        NSLog("Event buffered and saved to disk: \(label)")
     }
 
     // MARK: - Notification Management
@@ -344,9 +349,57 @@ final class AppLogic {
                     // Re-add failed event to buffer
                     DispatchQueue.main.async {
                         self.bufferedEvents.append(event)
+                        self.saveBufferedEvents()
                     }
                 }
             }
+        }
+        
+        // Save after successful processing
+        saveBufferedEvents()
+    }
+    
+    // MARK: - Persistent Buffering
+    private func saveBufferedEvents() {
+        let eventDictionaries = bufferedEvents.map { event in
+            [
+                "appKey": event.appKey,
+                "t1": event.t1,
+                "t2": event.t2,
+                "label": event.label,
+                "mt": event.mt,
+                "hidden": event.hidden
+            ] as [String: Any]
+        }
+        
+        UserDefaults.standard.set(eventDictionaries, forKey: bufferedEventsKey)
+        NSLog("Saved \(bufferedEvents.count) buffered events to disk")
+    }
+    
+    private func loadBufferedEvents() {
+        guard let eventDictionaries = UserDefaults.standard.array(forKey: bufferedEventsKey) as? [[String: Any]] else {
+            NSLog("No buffered events found on disk")
+            return
+        }
+        
+        bufferedEvents = eventDictionaries.compactMap { dict in
+            guard let appKey = dict["appKey"] as? String,
+                  let t1 = dict["t1"] as? Int64,
+                  let t2 = dict["t2"] as? Int64,
+                  let label = dict["label"] as? String,
+                  let mt = dict["mt"] as? Int,
+                  let hidden = dict["hidden"] as? Bool else {
+                return nil
+            }
+            
+            return (appKey: appKey, t1: t1, t2: t2, label: label, mt: mt, hidden: hidden)
+        }
+        
+        NSLog("Loaded \(bufferedEvents.count) buffered events from disk")
+        
+        // Show notification if there are events from previous session
+        if !bufferedEvents.isEmpty {
+            showNotification(title: "Events Restored", body: "Restored \(bufferedEvents.count) events from previous session", type: "restore")
         }
     }
 }
