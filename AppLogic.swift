@@ -1,6 +1,5 @@
 import Foundation
 import UserNotifications
-import Network
 
 // MARK: - Constants
 private enum Constants {
@@ -10,8 +9,15 @@ private enum Constants {
     static let modificationTimeThreshold: (min: Int64, max: Int64) = (20, 60)
 }
 
+// MARK: - AppLogic Delegate
+protocol AppLogicDelegate: AnyObject {
+    func didStartTracking(activity: String)
+    func didStopTracking()
+}
+
 // MARK: - AppLogic
 final class AppLogic {
+    weak var delegate: AppLogicDelegate?
     private let apiKey: String
     private let timetaggerUrl: String
     private var appKey: String
@@ -19,12 +25,13 @@ final class AppLogic {
     private var timetagger: TimetaggerHandler
     private var configuration: Configuration
     private var lastEvent: Data
-    private var monitor: NWPathMonitor
     private var bufferedEvents: [(appKey: String, t1: Int64, t2: Int64, label: String, mt: Int, hidden: Bool)] = []
     
     // MARK: - Properties
     private var notificationQueue: [UNNotificationRequest] = []
     private var isNotificationInProgress = false
+    private var isProcessingPageChange = false
+    private let serialQueue = DispatchQueue(label: "com.tcube.tracking", qos: .userInitiated)
 
     // MARK: - Lifecycle
     init(apiKey: String, timetaggerUrl: String, configuration: Configuration) {
@@ -36,27 +43,22 @@ final class AppLogic {
         self.configuration = configuration
         self.lastEvent = Data()
         
-        self.monitor = NWPathMonitor()
-        setupNetworkMonitoring()
+        setupNetworkNotifications()
     }
     
     deinit {
-        monitor.cancel()
+        // Cleanup is handled by TimetaggerHandler
     }
 
     // MARK: - Private Methods
-    private func setupNetworkMonitoring() {
-        monitor.pathUpdateHandler = { [weak self] path in
-            if path.status == .satisfied {
-                NSLog("Internet connection restored")
+    private func setupNetworkNotifications() {
+        // Network monitoring is now handled by TimetaggerHandler
+        // We'll listen for its connection changes to send buffered events
+        Timer.scheduledTimer(withTimeInterval: 30.0, repeats: true) { [weak self] _ in
+            if self?.timetagger.isConnected == true {
                 self?.sendBufferedEvents()
-            } else {
-                NSLog("No internet connection")
             }
         }
-        
-        let queue = DispatchQueue.global(qos: .background)
-        monitor.start(queue: queue)
     }
     
     private func generateRandomAppKey(length: Int = Constants.defaultAppKeyLength) -> String {
@@ -76,25 +78,34 @@ final class AppLogic {
         startTime = Int64(Date().timeIntervalSince1970)
         appKey = generateRandomAppKey()
         
+        // Notify delegate immediately
+        DispatchQueue.main.async { [weak self] in
+            self?.delegate?.didStartTracking(activity: description)
+        }
+        
         timetagger.sendEvent(appKey: appKey, t1: startTime, t2: startTime, label: description) { [weak self] response in
             guard let self = self else { return }
             
             if let response = response {
                 self.handleEventResponse(response: response, description: description)
             } else {
-                NSLog("Error sending start tracking event")
-                self.showNotification(title: "Event Buffered", body: "Event: \(description) has been buffered.")
+                NSLog("Error sending start tracking event - will buffer")
+                self.showNotification(title: "Event Buffered", body: "Event: \(description) has been buffered.", type: "buffer")
                 self.bufferEvent(appKey: self.appKey, t1: self.startTime, t2: self.startTime, label: description, hidden: false)
+                
+                // Notify delegate about potential connection issues but keep tracking
+                // Timer will continue running until explicitly stopped
             }
         }
         
         lastEvent = data
     }
 
-    func stopTracking() {
+    func stopTracking(completion: (() -> Void)? = nil) {
         let lastPage = extractPageFromData(data: lastEvent)
         guard let lastDescription = configuration.pageDescriptions[lastPage] else {
             NSLog("Page \(lastPage) is not defined or description is empty")
+            completion?()
             return
         }
         
@@ -104,32 +115,64 @@ final class AppLogic {
         
         // Check if tracking duration is too short
         if duration < Constants.minimumTrackingDuration {
-            handleShortDurationTracking(endTime: endTime, description: lastDescription)
+            handleShortDurationTracking(endTime: endTime, description: lastDescription, completion: completion)
             return
         }
         
         // Get existing event and process accordingly
-        processStopTracking(endTime: endTime, description: lastDescription)
+        processStopTracking(endTime: endTime, description: lastDescription, completion: completion)
     }
 
     func didUpdatePageChange(data: Data) {
-        let lastPage = extractPageFromData(data: lastEvent)
-        let currentPage = extractPageFromData(data: data)
-        
-        // Stop current tracking if there was an active page
-        if lastPage != 0 {
-            stopTracking()
-        }
-        
-        // Start new tracking if new page has description
-        if let description = configuration.pageDescriptions[currentPage], !description.isEmpty {
-            NSLog("Changed page to: \(description)")
-            startTracking(data: data)
-        } else {
-            // Update last event for page 0 or undefined pages
-            lastEvent = data
-            if currentPage != 0 {
-                NSLog("Page \(currentPage) is not defined or description is empty")
+        serialQueue.async { [weak self] in
+            guard let self = self else { return }
+            
+            // Prevent overlapping page change operations
+            guard !self.isProcessingPageChange else {
+                NSLog("Page change already in progress, ignoring")
+                return
+            }
+            
+            self.isProcessingPageChange = true
+            defer { self.isProcessingPageChange = false }
+            
+            let lastPage = self.extractPageFromData(data: self.lastEvent)
+            let currentPage = self.extractPageFromData(data: data)
+            
+            // Stop current tracking if there was an active page
+            if lastPage != 0 {
+                self.stopTracking { [weak self] in
+                    guard let self = self else { return }
+                    
+                    // Start new tracking only after stop is complete
+                    if let description = self.configuration.pageDescriptions[currentPage], !description.isEmpty {
+                        NSLog("Changed page to: \(description)")
+                        self.startTracking(data: data)
+                    } else {
+                        // Update last event for page 0 or undefined pages
+                        self.lastEvent = data
+                        if currentPage != 0 {
+                            NSLog("Page \(currentPage) is not defined or description is empty")
+                        }
+                        
+                        // Notify delegate about stopping
+                        DispatchQueue.main.async { [weak self] in
+                            self?.delegate?.didStopTracking()
+                        }
+                    }
+                }
+            } else {
+                // No active tracking, just start new one if needed
+                if let description = self.configuration.pageDescriptions[currentPage], !description.isEmpty {
+                    NSLog("Changed page to: \(description)")
+                    self.startTracking(data: data)
+                } else {
+                    // Update last event for page 0 or undefined pages
+                    self.lastEvent = data
+                    if currentPage != 0 {
+                        NSLog("Page \(currentPage) is not defined or description is empty")
+                    }
+                }
             }
         }
     }
@@ -138,36 +181,41 @@ final class AppLogic {
         return Int(data.first ?? 0)
     }
     
-    private func handleShortDurationTracking(endTime: Int64, description: String) {
+    private func handleShortDurationTracking(endTime: Int64, description: String, completion: (() -> Void)? = nil) {
         timetagger.sendEvent(appKey: appKey, t1: startTime, t2: endTime, label: description, hidden: true) { [weak self] response in
             if response != nil {
-                self?.showNotification(title: "Event Cancelled", body: "Duration was less than 10 seconds")
+                self?.showNotification(title: "Event Cancelled", body: "Duration was less than 10 seconds", type: "cancel")
             } else {
                 self?.bufferEvent(appKey: self?.appKey ?? "", t1: self?.startTime ?? 0, t2: endTime, label: description, hidden: true)
             }
+            completion?()
         }
     }
     
-    private func processStopTracking(endTime: Int64, description: String) {
+    private func processStopTracking(endTime: Int64, description: String, completion: (() -> Void)? = nil) {
         timetagger.getExistingEvent(appKey: appKey, t1: startTime - Constants.dayInSeconds, t2: endTime) { [weak self] event in
-            guard let self = self else { return }
+            guard let self = self else { 
+                completion?()
+                return 
+            }
             
             // Check if event is hidden
             if let event = event, let ds = event["ds"] as? String, ds.contains("HIDDEN") {
                 NSLog("Event is hidden, skipping update")
+                completion?()
                 return
             }
             
-            self.handleExistingEvent(event: event, endTime: endTime, description: description)
+            self.handleExistingEvent(event: event, endTime: endTime, description: description, completion: completion)
         }
     }
     
-    private func handleExistingEvent(event: [String: Any]?, endTime: Int64, description: String) {
+    private func handleExistingEvent(event: [String: Any]?, endTime: Int64, description: String, completion: (() -> Void)? = nil) {
         guard let event = event,
               let eventStartTime = event["t1"] as? Int64,
               let eventEndTime = event["t2"] as? Int64 else {
             // No existing event, send new one
-            sendFinalEvent(startTime: startTime, endTime: endTime, description: description)
+            sendFinalEvent(startTime: startTime, endTime: endTime, description: description, completion: completion)
             return
         }
         
@@ -178,24 +226,27 @@ final class AppLogic {
         
         if shouldModifyEvent {
             let finalEndTime = eventEndTime != eventStartTime ? eventEndTime : endTime
-            sendFinalEvent(startTime: eventStartTime, endTime: finalEndTime, description: description)
+            sendFinalEvent(startTime: eventStartTime, endTime: finalEndTime, description: description, completion: completion)
         } else {
-            sendFinalEvent(startTime: startTime, endTime: endTime, description: description)
+            sendFinalEvent(startTime: startTime, endTime: endTime, description: description, completion: completion)
         }
     }
     
-    private func sendFinalEvent(startTime: Int64, endTime: Int64, description: String) {
+    private func sendFinalEvent(startTime: Int64, endTime: Int64, description: String, completion: (() -> Void)? = nil) {
         timetagger.sendEvent(appKey: appKey, t1: startTime, t2: endTime, label: description) { [weak self] response in
-            guard let self = self else { return }
+            guard let self = self else { 
+                completion?()
+                return 
+            }
             
             if let response = response {
-                // Duration should be calculated from current session start time, not the event startTime
-                let duration = endTime - self.startTime
+                let duration = endTime - startTime
                 self.handleEventResponse(response: response, description: description, duration: duration)
             } else {
-                self.showNotification(title: "Event Buffered", body: "Event: \(description) has been buffered.")
+                self.showNotification(title: "Event Buffered", body: "Event: \(description) has been buffered.", type: "buffer")
                 self.bufferEvent(appKey: self.appKey, t1: startTime, t2: endTime, label: description, hidden: false)
             }
+            completion?()
         }
     }
     
@@ -205,13 +256,18 @@ final class AppLogic {
     }
 
     // MARK: - Notification Management
-    private func showNotification(title: String, body: String) {
+    private func showNotification(title: String, body: String, type: String = "general") {
         let content = UNMutableNotificationContent()
         content.title = title
         content.body = body
         content.sound = nil
-
-        let request = UNNotificationRequest(identifier: UUID().uuidString, content: content, trigger: nil)
+        content.threadIdentifier = "tracking-\(type)"
+        
+        // Use timestamp to ensure unique IDs but allow identification by type
+        let identifier = "\(type)-\(Int(Date().timeIntervalSince1970))"
+        let request = UNNotificationRequest(identifier: identifier, content: content, trigger: nil)
+        
+        NSLog("Queueing notification: \(title) - \(body)")
         notificationQueue.append(request)
         processNextNotification()
     }
@@ -224,12 +280,33 @@ final class AppLogic {
         let nextNotification = notificationQueue.removeFirst()
         isNotificationInProgress = true
 
-        UNUserNotificationCenter.current().add(nextNotification) { [weak self] error in
-            if let error = error {
-                NSLog("Error adding notification: \(error.localizedDescription)")
+        NSLog("Processing notification: \(nextNotification.identifier) - \(nextNotification.content.title)")
+        
+        // Check notification settings before adding
+        UNUserNotificationCenter.current().getNotificationSettings { settings in
+            NSLog("Notification settings - Auth: \(settings.authorizationStatus.rawValue), Alert: \(settings.alertSetting.rawValue)")
+            
+            UNUserNotificationCenter.current().add(nextNotification) { [weak self] error in
+                if let error = error {
+                    NSLog("Error adding notification: \(error.localizedDescription)")
+                } else {
+                    NSLog("Successfully added notification: \(nextNotification.identifier)")
+                    
+                    // Check pending notifications
+                    UNUserNotificationCenter.current().getPendingNotificationRequests { requests in
+                        NSLog("Pending notifications count: \(requests.count)")
+                        for request in requests {
+                            NSLog("Pending: \(request.identifier) - \(request.content.title)")
+                        }
+                    }
+                }
+                
+                // Add longer delay between notifications so user can read them
+                DispatchQueue.main.asyncAfter(deadline: .now() + 5.0) {
+                    self?.isNotificationInProgress = false
+                    self?.processNextNotification()
+                }
             }
-            self?.isNotificationInProgress = false
-            self?.processNextNotification()
         }
     }
 
@@ -244,10 +321,11 @@ final class AppLogic {
             let minutes = duration / 60
             let seconds = duration % 60
             message = "Finished tracking: \(description) (\(minutes)m \(seconds)s)"
+            showNotification(title: "Event Accepted", body: message, type: "finish")
         } else {
             message = "Started tracking: \(description)"
+            showNotification(title: "Event Accepted", body: message, type: "start")
         }
-        showNotification(title: "Event Accepted", body: message)
     }
 
     // MARK: - Buffered Events

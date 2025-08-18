@@ -7,13 +7,16 @@ This project is **free** and **open source** - not affiliated with TimeCube or T
 ## Features
 
 - **Bluetooth Integration**: Seamless connection to TimeCube device via CoreBluetooth
+- **Device Discovery**: Interactive TimeCube discovery with device selection dialog
 - **Intelligent Reconnection**: Smart backoff strategy for stable long-term operation (24+ hours)
 - **Battery Optimization**: Energy-efficient scanning and connection management
-- **Menu Bar Integration**: Clean status bar interface with timer display
+- **Menu Bar Integration**: Clean status bar interface with hashtag icon and timer display
+- **Sleep/Wake Handling**: Automatically pauses/resumes tracking during computer sleep
+- **Connection Persistence**: Timer continues during Bluetooth disconnects for user awareness
 - **Automatic Time Tracking**: Detects cube flips and automatically starts/stops tracking
 - **Network Resilience**: Offline event buffering with automatic sync when connection returns
-- **User Notifications**: Real-time feedback on tracking events
-- **Manual Controls**: Stop tracking option in menu bar
+- **Smart Notifications**: Queued notifications with 5-second intervals to prevent spam
+- **Manual Controls**: Stop tracking, find TimeCube, and forget device options in menu bar
 
 ## System Requirements
 
@@ -92,10 +95,14 @@ touch ~/.tcube-timetagger/config.json
 
 ### Menu Bar Interface
 
-- **Timer Display**: Shows elapsed time when tracking is active
-- **Battery Level**: Displays cube battery percentage
-- **Stop Tracking**: Manual stop option (enabled only when tracking)
-- **Quit**: Exit the application
+- **Hashtag Icon**: Modern hashtag symbol that adapts to system appearance
+- **Timer Display**: Shows elapsed time when tracking is active (continues during disconnects)
+- **Open Timetagger**: Quick access to Timetagger web interface (⌘+T)
+- **Battery Level**: Displays TimeCube battery percentage
+- **Stop Tracking**: Manual stop option with current activity name (⌘+S)
+- **Find TimeCube**: Interactive device discovery with 10-second scan (⌘+F)
+- **Forget TimeCube**: Disconnect and forget current device
+- **Quit**: Exit the application (⌘+Q)
 
 ### Automatic Tracking
 
@@ -103,6 +110,9 @@ touch ~/.tcube-timetagger/config.json
 - **Activity Mapping**: Each face corresponds to a configured activity
 - **Time Logging**: Events are sent to Timetagger in real-time
 - **Offline Support**: Events are buffered when offline and synced when connection returns
+- **Smart Duration**: Automatically cancels events shorter than 10 seconds
+- **Connection Resilience**: Timer continues during Bluetooth disconnects for user awareness
+- **Sleep Handling**: Pauses tracking during computer sleep, resumes on wake
 
 ## Architecture
 
@@ -189,6 +199,17 @@ All API requests include the `authtoken` header with your Timetagger API key.
 - Ensure the cube face has a configured description
 - Check the app has notification permissions
 - Verify the cube is properly oriented
+- Use "Find TimeCube" if device isn't connected
+
+**Device Discovery Issues**:
+- Make sure TimeCube is in pairing mode during discovery
+- Try the "Forget TimeCube" option and rediscover
+- Check Bluetooth is enabled and working properly
+
+**Notification Issues**:
+- Grant notification permissions in System Preferences
+- Check notification settings allow banners/alerts
+- Clear notification center cache if needed
 
 ### Debug Logging
 

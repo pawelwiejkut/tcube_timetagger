@@ -7,6 +7,7 @@ protocol BluetoothDeviceManagerDelegate: AnyObject {
     func didConnectToDevice(data: Data)
     func didDisconnectFromDevice(data: Data)
     func didUpdatePageChange(data: Data)
+    func didDiscoverDevice(_ peripheral: CBPeripheral, rssi: NSNumber)
 }
 
 // MARK: - Constants
@@ -40,6 +41,10 @@ final class BluetoothDeviceManager: NSObject, CBCentralManagerDelegate, CBPeriph
     private var reconnectAttempts: Int = 0
     private var lastDisconnectionTime: Date?
     private var isBackgroundScanning: Bool = false
+    
+    // Device discovery
+    private var discoveredDevices: [CBPeripheral] = []
+    private var isDiscoveryMode: Bool = false
 
     // MARK: - Lifecycle
     override init() {
@@ -77,12 +82,40 @@ final class BluetoothDeviceManager: NSObject, CBCentralManagerDelegate, CBPeriph
         }
         
         NSLog("Starting device scan...")
+        isDiscoveryMode = false
         centralManager.scanForPeripherals(withServices: nil, options: [CBCentralManagerScanOptionAllowDuplicatesKey: false])
+    }
+    
+    func startDiscoveryMode() {
+        guard centralManager.state == .poweredOn else {
+            NSLog("Cannot scan: Bluetooth not powered on")
+            return
+        }
+        
+        NSLog("Starting device discovery mode... (isDiscoveryMode will be set to true)")
+        isDiscoveryMode = true
+        discoveredDevices.removeAll()
+        
+        NSLog("Starting Bluetooth scan for peripherals...")
+        centralManager.scanForPeripherals(withServices: nil, options: [CBCentralManagerScanOptionAllowDuplicatesKey: true])
+        
+        // Stop discovery after 10 seconds
+        DispatchQueue.main.asyncAfter(deadline: .now() + 10) { [weak self] in
+            NSLog("10 seconds elapsed, stopping discovery scan...")
+            self?.stopScanning()
+            NSLog("Discovery scan completed. Found \(self?.discoveredDevices.count ?? 0) devices.")
+        }
     }
 
     func stopScanning() {
         NSLog("Stopping device scan")
         centralManager.stopScan()
+        isDiscoveryMode = false
+        
+        if isBackgroundScanning {
+            NSLog("Stopping background scanning")
+            isBackgroundScanning = false
+        }
     }
     
     func disconnectFromDevice() {
@@ -93,6 +126,52 @@ final class BluetoothDeviceManager: NSObject, CBCentralManagerDelegate, CBPeriph
     func attemptReconnection() {
         guard centralManager.state == .poweredOn else { return }
         attemptConnectionOrScan()
+    }
+    
+    func connectToDevice(_ peripheral: CBPeripheral) {
+        NSLog("Attempting to connect to selected device: \(peripheral.name ?? "Unknown")")
+        
+        // Properly cleanup discovery state before connecting
+        stopScanning()
+        isDiscoveryMode = false
+        discoveredDevices.removeAll()
+        
+        self.peripheral = peripheral
+        self.peripheral?.delegate = self
+        centralManager.connect(peripheral, options: nil)
+        
+        NSLog("BluetoothManager: Discovery state cleared for connection")
+    }
+    
+    func forgetDevice() {
+        NSLog("Forgetting current TimeCube device")
+        
+        // Stop any ongoing scans first
+        stopScanning()
+        
+        // Disconnect if connected
+        if let peripheral = peripheral {
+            centralManager.cancelPeripheralConnection(peripheral)
+        }
+        
+        // Clear device reference
+        self.peripheral = nil
+        
+        // Stop any reconnection attempts
+        stopReconnectTimer()
+        resetReconnectionState()
+        
+        // Clear discovery state
+        isDiscoveryMode = false
+        discoveredDevices.removeAll()
+        
+        // Notify delegate about disconnection
+        delegate?.didDisconnectFromDevice(data: Data())
+    }
+    
+    // Check if device is currently connected
+    func isDeviceConnected() -> Bool {
+        return peripheral?.state == .connected
     }
     
     // MARK: - Private Methods
@@ -106,20 +185,40 @@ final class BluetoothDeviceManager: NSObject, CBCentralManagerDelegate, CBPeriph
     }
 
     @objc func centralManager(_ central: CBCentralManager, didDiscover peripheral: CBPeripheral, advertisementData: [String: Any], rssi RSSI: NSNumber) {
-        guard peripheral.name == BluetoothConstants.deviceName else { return }
-        
-        NSLog("Found device: \(peripheral.name ?? "Unknown")")
-        self.peripheral = peripheral
-        self.peripheral?.delegate = self
-        centralManager.connect(peripheral, options: nil)
-        stopScanning()
+        if isDiscoveryMode {
+            // Discovery mode - collect all TimeCube devices
+            if peripheral.name == BluetoothConstants.deviceName {
+                // Avoid duplicates
+                if !discoveredDevices.contains(where: { $0.identifier == peripheral.identifier }) {
+                    NSLog("Discovered device: \(peripheral.name ?? "Unknown") - \(peripheral.identifier)")
+                    discoveredDevices.append(peripheral)
+                    delegate?.didDiscoverDevice(peripheral, rssi: RSSI)
+                }
+            }
+        } else {
+            // Normal mode - connect to first found device
+            guard peripheral.name == BluetoothConstants.deviceName else { return }
+            
+            NSLog("Found device: \(peripheral.name ?? "Unknown")")
+            self.peripheral = peripheral
+            self.peripheral?.delegate = self
+            centralManager.connect(peripheral, options: nil)
+            stopScanning()
+        }
     }
 
     @objc func centralManager(_ central: CBCentralManager, didConnect peripheral: CBPeripheral) {
         NSLog("Connected to device: \(peripheral.name ?? "Unknown") after \(reconnectAttempts) attempts")
+        
+        // Ensure discovery mode is completely disabled after connection
+        isDiscoveryMode = false
+        discoveredDevices.removeAll()
+        
         resetReconnectionState()
         delegate?.didConnectToDevice(data: Data())
         peripheral.discoverServices(nil)
+        
+        NSLog("BluetoothManager: Connection established, discovery state reset")
     }
 
     @objc func centralManager(_ central: CBCentralManager, didDisconnectPeripheral peripheral: CBPeripheral, error: Error?) {
