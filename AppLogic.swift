@@ -57,7 +57,7 @@ final class AppLogic {
     private func setupNetworkNotifications() {
         // Network monitoring is now handled by TimetaggerHandler
         // We'll listen for its connection changes to send buffered events
-        Timer.scheduledTimer(withTimeInterval: 30.0, repeats: true) { [weak self] _ in
+        Timer.scheduledTimer(withTimeInterval: 120.0, repeats: true) { [weak self] _ in  // 2 min - battery friendly
             if self?.timetagger.isConnected == true {
                 self?.sendBufferedEvents()
             }
@@ -361,6 +361,12 @@ final class AppLogic {
     
     // MARK: - Persistent Buffering
     private func saveBufferedEvents() {
+        // Only save if there are changes to avoid unnecessary disk writes
+        guard !bufferedEvents.isEmpty else {
+            UserDefaults.standard.removeObject(forKey: bufferedEventsKey)
+            return
+        }
+        
         let eventDictionaries = bufferedEvents.map { event in
             [
                 "appKey": event.appKey,

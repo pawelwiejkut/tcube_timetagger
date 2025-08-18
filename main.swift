@@ -12,7 +12,7 @@ private enum MenuIndices {
 }
 
 private enum Constants {
-    static let timerUpdateInterval: TimeInterval = 1.0
+    static let timerUpdateInterval: TimeInterval = 10.0  // 10s - battery friendly
     static let timerItemWidth: CGFloat = 40
 }
 
