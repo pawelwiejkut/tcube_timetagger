@@ -184,6 +184,11 @@ final class AppLogic {
         return Int(data.first ?? 0)
     }
     
+    // MARK: - Public Interface for Timer Sync
+    func getCurrentStartTime() -> Int64 {
+        return startTime
+    }
+    
     private func handleShortDurationTracking(endTime: Int64, description: String, completion: (() -> Void)? = nil) {
         timetagger.sendEvent(appKey: appKey, t1: startTime, t2: endTime, label: description, hidden: true) { [weak self] response in
             if response != nil {

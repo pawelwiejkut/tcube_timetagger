@@ -564,6 +564,9 @@ class AppDelegate: NSObject, NSApplicationDelegate, BluetoothDeviceManagerDelega
         let minutes = (elapsedTime % 3600) / 60
         let timerString = String(format: "%02d:%02d", hours, minutes)
         
+        // Debug logging for sleep/wake verification
+        NSLog("Timer UI: elapsed=\(elapsedTime)s (\(hours)h \(minutes)m) since \(startDate)")
+        
         if let button = statusItem.button {
             button.title = timerString
             button.image = nil
@@ -583,6 +586,10 @@ class AppDelegate: NSObject, NSApplicationDelegate, BluetoothDeviceManagerDelega
     }
     
     // MARK: - Helper Methods
+    private func getAppLogicStartTime() -> Int64? {
+        return appLogic?.getCurrentStartTime()
+    }
+    
     private func initializeBluetoothManager() {
         bluetoothManager = BluetoothDeviceManager()
         bluetoothManager.delegate = self
@@ -612,7 +619,17 @@ class AppDelegate: NSObject, NSApplicationDelegate, BluetoothDeviceManagerDelega
     func didStartTracking(activity: String) {
         currentActivity = activity
         stopTimer()
-        startTimer()
+        
+        // Use the same timestamp as AppLogic for consistency
+        if let appLogicStartTime = getAppLogicStartTime() {
+            let startDate = Date(timeIntervalSince1970: TimeInterval(appLogicStartTime))
+            startTimer(from: startDate)
+            NSLog("Timer synchronized with AppLogic start time: \(startDate)")
+        } else {
+            startTimer()
+            NSLog("Timer using current time (AppLogic time unavailable)")
+        }
+        
         updateTimerUI()
         setTrackingState(true)
     }
