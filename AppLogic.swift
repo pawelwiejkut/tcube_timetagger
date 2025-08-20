@@ -328,9 +328,10 @@ final class AppLogic {
         
         let message: String
         if let duration = duration {
-            let minutes = duration / 60
+            let hours = duration / 3600
+            let minutes = (duration % 3600) / 60
             let seconds = duration % 60
-            message = "Finished tracking: \(description) (\(minutes)m \(seconds)s)"
+            message = "Finished tracking: \(description) (\(hours)h \(minutes)m \(seconds)s)"
             showNotification(title: "Event Accepted", body: message, type: "finish")
         } else {
             message = "Started tracking: \(description)"
